@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>허니팁 지원금 체크 | 10초 월세 환급 · 숨은 지원금 체크기</title>
+<meta name="description" content="나이대만 골라주면 내 월세 세액공제와 조건에 맞는 숨은 지원금을 10초 만에 확인해요. 2026년 11월 기준.">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  :root {
+    --cream: #FFFBF3;
+    --cream2: #FFF6E8;
+    --card: #FFFFFF;
+    --orange: #E8821E;
+    --orange-deep: #D96E00;
+    --orange-soft: #FFF1DE;
+    --gold: #F5A623;
+    --ink: #2B2118;
+    --ink-soft: #6B5B4A;
+    --ink-mute: #A08B76;
+    --line: #F0E4D2;
+    --line-soft: #F6EEDF;
+    --green: #2E9E6B;
+    --green-soft: #E6F5EE;
+    --red: #D64545;
+    --red-soft: #FDECEC;
+    --gray-chip: #F4EFE8;
+  }
+  body {
+    background: var(--cream);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+    line-height: 1.55;
+  }
+  .wrap { max-width: 480px; margin: 0 auto; padding: 0 20px 48px; }
+
+  /* ---------- header ---------- */
+  header { padding: 20px 0 0; }
+  .head-row { display: flex; align-items: center; justify-content: space-between; }
+  .brand { font-size: 21px; font-weight: 800; letter-spacing: -0.02em; }
+  .brand .honey { font-size: 22px; }
+  .brand .accent { color: var(--orange); }
+  .badge-date {
+    font-size: 12.5px; font-weight: 700; color: var(--ink-soft);
+    border: 1.5px solid #EADFCB; background: #fff;
+    padding: 5px 12px; border-radius: 999px; white-space: nowrap;
+  }
+  .progress { height: 8px; background: #F3E9D7; border-radius: 99px; margin-top: 16px; overflow: hidden; }
+  .progress > div { height: 100%; width: 25%; background: linear-gradient(90deg, var(--gold), var(--orange)); border-radius: 99px; transition: width .35s ease; }
+
+  /* ---------- steps ---------- */
+  .step { display: none; padding-top: 30px; animation: fade .3s ease; }
+  .step.active { display: block; }
+  @keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  .step-label { font-family: Georgia, "Times New Roman", serif; font-size: 15px; font-weight: 700; letter-spacing: .14em; color: var(--orange); }
+  h1 { font-family: "Noto Serif KR", Georgia, "Times New Roman", serif; font-size: 34px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.25; margin: 8px 0 10px; }
+  .step-desc { font-size: 15.5px; color: var(--ink-soft); margin-bottom: 26px; }
+
+  .opt {
+    display: flex; align-items: center; gap: 14px; width: 100%;
+    background: var(--card); border: 1.5px solid var(--line); border-radius: 20px;
+    padding: 20px 18px; margin-bottom: 14px; cursor: pointer; text-align: left;
+    font-family: inherit; transition: border-color .15s, background .15s, box-shadow .15s;
+    box-shadow: 0 1px 3px rgba(90, 60, 20, .05);
+  }
+  .opt:active { transform: scale(.99); }
+  .opt.selected { border-color: var(--orange); background: #FFF8EE; box-shadow: 0 0 0 3px rgba(232, 130, 30, .14); }
+  .opt .ic { font-size: 34px; line-height: 1; flex: none; width: 44px; text-align: center; }
+  .opt .tx { flex: 1; min-width: 0; }
+  .opt .tx b { display: block; font-size: 18px; letter-spacing: -0.01em; }
+  .opt .tx span { display: block; font-size: 13.5px; color: var(--ink-mute); margin-top: 2px; }
+  .opt .radio {
+    flex: none; width: 26px; height: 26px; border-radius: 50%;
+    border: 2px solid #DDD2BF; background: #fff; position: relative;
+  }
+  .opt.selected .radio { border-color: var(--orange); }
+  .opt.selected .radio::after {
+    content: ""; position: absolute; inset: 4px; border-radius: 50%; background: var(--orange);
+  }
+
+  .info-box {
+    background: var(--cream2); border: 1.5px solid var(--line-soft);
+    border-radius: 20px; padding: 20px; margin-top: 22px;
+  }
+  .info-box h3 { font-size: 14.5px; color: var(--ink-mute); font-weight: 700; margin-bottom: 12px; }
+  .info-box li { list-style: none; font-size: 15.5px; font-weight: 600; padding: 6px 0; display: flex; gap: 10px; align-items: flex-start; }
+  .info-box li .e { flex: none; font-size: 19px; line-height: 1.4; }
+
+  .nav { display: flex; gap: 10px; margin-top: 26px; }
+  .btn {
+    flex: 1; border: none; border-radius: 16px; padding: 16px 10px;
+    font-size: 16.5px; font-weight: 800; font-family: inherit; cursor: pointer;
+    background: var(--orange); color: #fff;
+    box-shadow: 0 4px 14px rgba(232, 130, 30, .35);
+  }
+  .btn:disabled { background: #E3D6C2; color: #fff; box-shadow: none; cursor: not-allowed; }
+  .btn.ghost { flex: 0 0 96px; background: #fff; color: var(--ink-soft); border: 1.5px solid var(--line); box-shadow: none; }
+  .btn:active { transform: scale(.98); }
+
+  /* input step */
+  .rent-input-wrap { display: flex; align-items: center; gap: 8px; background: #fff; border: 1.5px solid var(--line); border-radius: 20px; padding: 8px 18px; }
+  .rent-input-wrap input {
+    flex: 1; border: none; outline: none; font-size: 30px; font-weight: 800; font-family: inherit;
+    color: var(--ink); width: 100%; background: transparent; text-align: right;
+  }
+  .rent-input-wrap input::placeholder { color: #D8C9B4; }
+  .rent-input-wrap .unit { font-size: 18px; font-weight: 700; color: var(--ink-soft); flex: none; }
+  .chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+  .chip {
+    border: 1.5px solid var(--line); background: #fff; border-radius: 999px; padding: 9px 16px;
+    font-size: 14.5px; font-weight: 700; font-family: inherit; cursor: pointer; color: var(--ink-soft);
+  }
+  .chip.selected { border-color: var(--orange); background: var(--orange-soft); color: var(--orange-deep); }
+  .hint { font-size: 13.5px; color: var(--ink-mute); margin-top: 14px; }
+
+  /* ---------- result ---------- */
+  .hero {
+    background: linear-gradient(135deg, #FFE9BE 0%, #FFD98F 55%, #FFC46B 100%);
+    border-radius: 24px; padding: 24px 22px 20px; position: relative; overflow: hidden;
+  }
+  .hero::after { content: "🍯"; position: absolute; right: 14px; top: 8px; font-size: 64px; opacity: .35; transform: rotate(-12deg); }
+  .hero .lbl { font-size: 14px; font-weight: 700; color: #7A5A1E; }
+  .hero .amount { font-family: "Noto Serif KR", Georgia, serif; font-size: 44px; font-weight: 900; letter-spacing: -0.02em; line-height: 1.15; margin: 4px 0 6px; }
+  .hero .amount .won { font-size: 26px; font-weight: 800; }
+  .hero .formula { font-size: 13.5px; color: #7A5A1E; font-weight: 600; }
+  .hero .note { font-size: 12.5px; color: #8A6D33; margin-top: 8px; line-height: 1.5; }
+  .hero .note.zero { font-size: 14.5px; font-weight: 700; color: #7A5A1E; }
+  .rate-row { display: flex; gap: 8px; margin-top: 16px; position: relative; z-index: 1; }
+  .rate-chip {
+    flex: 1; border: 1.5px solid rgba(122, 90, 30, .35); background: rgba(255,255,255,.55);
+    border-radius: 12px; padding: 9px 4px; font-size: 12.5px; font-weight: 700; color: #7A5A1E;
+    font-family: inherit; cursor: pointer; line-height: 1.35;
+  }
+  .rate-chip.selected { background: var(--ink); color: #FFE1A8; border-color: var(--ink); }
+
+  .ad-slot {
+    border: 1.5px dashed #DCCFB8; border-radius: 14px; background: #FFFDF8;
+    text-align: center; padding: 14px 10px; margin: 18px 0 4px;
+    font-size: 12px; color: #B7A78D; line-height: 1.6;
+  }
+  .ad-slot b { display: block; font-size: 11px; letter-spacing: .2em; color: #C9B99E; }
+
+  .sec-title { font-size: 19px; font-weight: 800; letter-spacing: -0.01em; margin: 26px 0 4px; display: flex; justify-content: space-between; align-items: baseline; }
+  .sec-title .cnt { font-size: 13px; color: var(--ink-mute); font-weight: 700; }
+  .sec-sub { font-size: 13px; color: var(--ink-mute); margin-bottom: 14px; }
+
+  .support {
+    background: #fff; border: 1.5px solid var(--line); border-radius: 20px;
+    padding: 18px; margin-bottom: 12px;
+  }
+  .support.disabled { background: #FBF8F2; }
+  .support.disabled .s-body, .support.disabled .s-head b { color: var(--ink-mute); }
+  .s-head { display: flex; align-items: flex-start; gap: 10px; }
+  .s-head .ic { font-size: 26px; line-height: 1.2; }
+  .s-head b { font-size: 16.5px; display: block; }
+  .s-head .org { font-size: 12.5px; color: var(--ink-mute); display: block; margin-top: 1px; }
+  .s-badge { margin-left: auto; flex: none; font-size: 11.5px; font-weight: 800; padding: 5px 10px; border-radius: 999px; white-space: nowrap; }
+  .s-badge.ok { background: var(--green-soft); color: var(--green); }
+  .s-badge.warn { background: #FFF3D6; color: #9A6A00; }
+  .s-badge.off { background: var(--gray-chip); color: var(--ink-mute); }
+  .s-badge.check { background: #FFF3D6; color: #9A6A00; }
+  .s-amount { font-family: "Noto Serif KR", Georgia, serif; font-size: 23px; font-weight: 900; margin: 12px 0 2px; letter-spacing: -0.01em; }
+  .s-amount small { font-size: 15px; font-weight: 700; font-family: -apple-system, sans-serif; }
+  .s-body { font-size: 13.5px; color: var(--ink-soft); line-height: 1.6; }
+  .s-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+  .s-tag { font-size: 11.5px; font-weight: 700; color: var(--ink-soft); background: var(--cream2); border: 1px solid var(--line-soft); border-radius: 999px; padding: 4px 9px; }
+  .s-tag.hot { color: var(--red); background: var(--red-soft); border-color: #F6D5D5; }
+  .s-link { display: inline-block; margin-top: 10px; font-size: 13.5px; font-weight: 800; color: var(--orange-deep); text-decoration: none; }
+
+  .deadline {
+    background: #FFF3D6; border: 1.5px solid #F5DFAC; border-radius: 16px;
+    padding: 14px 16px; font-size: 13.5px; font-weight: 700; color: #7A5A1E; margin: 4px 0 12px; line-height: 1.6;
+  }
+
+  .cpa {
+    background: #fff; border: 2px solid var(--orange); border-radius: 20px;
+    padding: 20px 18px; margin-top: 20px; position: relative;
+  }
+  .cpa .cpa-tag {
+    position: absolute; top: -11px; left: 18px; background: var(--orange); color: #fff;
+    font-size: 11.5px; font-weight: 800; padding: 4px 10px; border-radius: 999px;
+  }
+  .cpa h3 { font-size: 17.5px; margin: 4px 0 6px; }
+  .cpa p { font-size: 13.5px; color: var(--ink-soft); line-height: 1.6; }
+  .cpa .btn { width: 100%; margin-top: 14px; text-align: center; display: block; text-decoration: none; }
+  .cpa .fine { font-size: 11.5px; color: var(--ink-mute); margin-top: 10px; line-height: 1.55; }
+
+  .copy-btn, .recalc-btn {
+    width: 100%; border-radius: 16px; padding: 16px 10px; font-size: 16px; font-weight: 800;
+    font-family: inherit; cursor: pointer; margin-top: 12px;
+  }
+  .copy-btn { background: #fff; border: 1.5px solid var(--line); color: var(--ink); }
+  .recalc-btn { background: transparent; border: none; color: var(--ink-soft); font-size: 14.5px; }
+  .toast {
+    position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%) translateY(20px);
+    background: var(--ink); color: #fff; font-size: 14px; font-weight: 700;
+    padding: 12px 20px; border-radius: 999px; opacity: 0; pointer-events: none; transition: all .25s ease;
+    white-space: nowrap; z-index: 50; box-shadow: 0 6px 20px rgba(0,0,0,.25);
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  footer { margin-top: 30px; text-align: center; }
+  footer .lock { font-size: 13px; color: var(--ink-mute); font-weight: 600; line-height: 1.7; }
+  footer .src { font-size: 12px; color: #B7A78D; margin-top: 14px; line-height: 1.7; }
+  footer .copy { font-size: 12px; color: #C9B99E; margin-top: 6px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="head-row">
+      <div class="brand"><span class="honey">🍯</span> 허니팁 <span class="accent">지원금 체크</span></div>
+      <div class="badge-date">2026.11 기준</div>
+    </div>
+    <div class="progress"><div id="progressBar"></div></div>
+  </header>
+
+  <!-- ============ STEP 1 : 나이 ============ -->
+  <section class="step active" id="step1">
+    <div class="step-label">STEP 1 / 4</div>
+    <h1>나이대만 골라줘</h1>
+    <p class="step-desc">지원금마다 나이 기준이 달라서 먼저 물어볼게</p>
+
+    <button class="opt" data-age="youth" onclick="pickAge('youth', this)">
+      <span class="ic">🌱</span>
+      <span class="tx"><b>만 19~34세</b><span>청년 지원금 대부분 여기 해당</span></span>
+      <span class="radio"></span>
+    </button>
+    <button class="opt" data-age="late30" onclick="pickAge('late30', this)">
+      <span class="ic">🌿</span>
+      <span class="tx"><b>만 35~39세</b><span>지자체 청년 사업은 아직 가능</span></span>
+      <span class="radio"></span>
+    </button>
+    <button class="opt" data-age="over40" onclick="pickAge('over40', this)">
+      <span class="ic">🌳</span>
+      <span class="tx"><b>만 40세 이상</b><span>세액공제·근로장려금 중심</span></span>
+      <span class="radio"></span>
+    </button>
+
+    <div class="info-box">
+      <h3>이런 걸 알려줌</h3>
+      <ul>
+        <li><span class="e">💰</span>내 월세로 세액공제 얼마 돌려받는지</li>
+        <li><span class="e">🔍</span>나이·지역 조건에 맞는 숨은 지원금</li>
+        <li><span class="e">⏰</span>이번 주 마감되는 신청 일정까지</li>
+      </ul>
+    </div>
+
+    <div class="nav">
+      <button class="btn" id="toStep2" disabled onclick="goStep(2)">다음 →</button>
+    </div>
+  </section>
+
+  <!-- ============ STEP 2 : 월세 ============ -->
+  <section class="step" id="step2">
+    <div class="step-label">STEP 2 / 4</div>
+    <h1>월세 얼마 내고 있어?</h1>
+    <p class="step-desc">월세 세액공제액을 계산할 때만 써. 입력값은 저장하지 않아.</p>
+
+    <div class="rent-input-wrap">
+      <input type="number" id="rentInput" inputmode="numeric" min="0" max="500" placeholder="50" value="50">
+      <span class="unit">만원 / 월</span>
+    </div>
+    <div class="chips" id="rentChips">
+      <button class="chip" onclick="setRent(30, this)">30만원</button>
+      <button class="chip selected" onclick="setRent(50, this)">50만원</button>
+      <button class="chip" onclick="setRent(70, this)">70만원</button>
+      <button class="chip" onclick="setRent(100, this)">100만원</button>
+      <button class="chip" id="noRentChip" onclick="setRent(0, this)">월세 없어요</button>
+    </div>
+    <p class="hint">· 전세·자가라서 월세가 없다면 "월세 없어요"를 눌러줘. 세액공제는 0원이야.<br>· 보증금은 빼고, 순수 월세만 입력해줘.</p>
+
+    <div class="nav">
+      <button class="btn ghost" onclick="goStep(1)">← 이전</button>
+      <button class="btn" onclick="goStep(3)">다음 →</button>
+    </div>
+  </section>
+
+  <!-- ============ STEP 3 : 총급여 ============ -->
+  <section class="step" id="step3">
+    <div class="step-label">STEP 3 / 4</div>
+    <h1>총급여 구간은?</h1>
+    <p class="step-desc">연봉이 아니라 세전 총급여 기준이야. 구간에 따라 공제율이 달라져.</p>
+
+    <button class="opt" onclick="pickIncome('low', this)">
+      <span class="ic">💼</span>
+      <span class="tx"><b>5,500만원 이하</b><span>공제율 17% · 가장 많이 돌려받아</span></span>
+      <span class="radio"></span>
+    </button>
+    <button class="opt" onclick="pickIncome('mid', this)">
+      <span class="ic">📋</span>
+      <span class="tx"><b>5,500만원 초과 ~ 8,000만원 이하</b><span>공제율 15%</span></span>
+      <span class="radio"></span>
+    </button>
+    <button class="opt" onclick="pickIncome('high', this)">
+      <span class="ic">🚫</span>
+      <span class="tx"><b>8,000만원 초과</b><span>월세 세액공제 대상이 아니야</span></span>
+      <span class="radio"></span>
+    </button>
+
+    <p class="hint">· 총급여는 연봉에서 비과세 수당을 뺀 금액이야. 잘 모르겠으면 5,500만원 이하로 두고 봐.<br>· 종합소득금액이 7,000만원을 넘으면 총급여 8,000만원 이하여도 대상에서 빠져.</p>
+
+    <div class="nav">
+      <button class="btn ghost" onclick="goStep(2)">← 이전</button>
+      <button class="btn" id="toResult" disabled onclick="showResult()">결과 보기 →</button>
+    </div>
+  </section>
+
+  <!-- ============ STEP 4 : 결과 ============ -->
+  <section class="step" id="step4">
+    <div class="step-label">STEP 4 / 4 · 내 결과</div>
+
+    <div class="hero" id="heroBox">
+      <div class="lbl">내 예상 월세 세액공제</div>
+      <div class="amount" id="deductionAmount">1,020,000<span class="won">원</span></div>
+      <div class="formula" id="deductionFormula">월세 50만원 × 12 = 600만원 × 17%</div>
+      <div class="note" id="deductionNote">월 85,000원꼴이야. 세액공제는 납 세액에서 깎아주는 제도라 실제 환급액은 내 산출세액에 따라 달라져.</div>
+      <div class="rate-row" id="rateRow">
+        <button class="rate-chip selected" data-rate="low" onclick="changeRate('low', this)">5,500만<br>이하 17%</button>
+        <button class="rate-chip" data-rate="mid" onclick="changeRate('mid', this)">8,000만<br>이하 15%</button>
+        <button class="rate-chip" data-rate="high" onclick="changeRate('high', this)">8,000만<br>초과</button>
+      </div>
+    </div>
+
+    <div class="ad-slot"><b>AD</b>광고 슬롯<br>(반응형 320x100)</div>
+
+    <h2 class="sec-title">내 조건에 맞는 숨은 지원금 <span class="cnt" id="supportCount"></span></h2>
+    <p class="sec-sub">나이·조건에 맞는 것만 골랐어. 카드마다 신청 조건을 꼭 확인해줘.</p>
+
+    <div id="supportList"></div>
+
+    <div class="deadline">⏰ 이번 주 마감 일정 · 근로장려금 기한 후 신청은 <b>12월 1일까지</b>, 이때 신청하면 계산 금액의 <b>95%</b>를 받아. 아직 안 받았다면 서두르는 게 좋아.</div>
+
+    <div class="cpa">
+      <span class="cpa-tag">오늘 바로 챙기는 1만 원 앱테크</span>
+      <h3>🔥 메리츠 모음(MOUM) 가입하고 1만 원 적립</h3>
+      <p>친구 초대 이벤트로 가입하면 포인트 1만 원을 바로 줘. 만보기·출석만 해도 되는 것들은 모았다. (~12/31, 메리츠증권 계좌 개설 이력 없는 신규 고객 대상)</p>
+      <a class="btn" href="https://blog.naver.com/ckdwls321321/224488680896" target="_blank" rel="noopener">1분 만에 확인하기 →</a>
+      <p class="fine">이 페이지에는 추천인 링크가 포함되어 있으며, 가입 후 조건 충족 시 작성자도 혜택을 받을 수 있습니다.</p>
+    </div>
+
+    <button class="copy-btn" onclick="copyResult()">📋 내 결과 복사하기</button>
+    <button class="recalc-btn" onclick="goStep(1)">조건 바꿔서 다시 계산</button>
+
+    <div class="ad-slot"><b>AD</b>광고 슬롯<br>(반응형 320x100)</div>
+
+    <footer>
+      <p class="lock">🔒 입력값은 저장하지 않아요 · 계산은 이 화면에서만<br>🍯 허니팁 · 2026년 11월 기준 자료로 계산</p>
+      <p class="src">기준일: 2026년 11월 25일. 세액공제는 납 세액에서 깎아주는 제도라 실제 돌려받는 금액은 내 산출세액과 공제 순서에 따라 달라져요. 최종 판단은 기관 안내를 확인하세요.<br>출처: 국세청 · 국토교통부 · 복지로 · 금융위원회 · 서민금융진흥원 · 한국교통안전공단</p>
+      <p class="copy">© 허니팁 · 계산 결과는 참고용이며, 실제 지급액과 다를 수 있어요.</p>
+    </footer>
+  </section>
+
+</div>
+
+<div class="toast" id="toast">복사했어요 📋</div>
+
+<script>
+  // 입력값은 메모리 안에서만 계산합니다. 저장하지 않습니다.
+  var state = { age: null, rent: 50, income: null };
+
+  function goStep(n) {
+    document.querySelectorAll('.step').forEach(function (s) { s.classList.remove('active'); });
+    document.getElementById('step' + n).classList.add('active');
+    document.getElementById('progressBar').style.width = (n * 25) + '%';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function pickAge(age, el) {
+    state.age = age;
+    document.querySelectorAll('#step1 .opt').forEach(function (o) { o.classList.remove('selected'); });
+    el.classList.add('selected');
+    document.getElementById('toStep2').disabled = false;
+  }
+
+  function setRent(v, el) {
+    state.rent = v;
+    document.getElementById('rentInput').value = v === 0 ? '' : v;
+    document.querySelectorAll('#rentChips .chip').forEach(function (c) { c.classList.remove('selected'); });
+    el.classList.add('selected');
+  }
+
+  document.getElementById('rentInput').addEventListener('input', function (e) {
+    var v = parseInt(e.target.value, 10);
+    if (isNaN(v) || v < 0) v = 0;
+    if (v > 500) { v = 500; e.target.value = 500; }
+    state.rent = v;
+    document.querySelectorAll('#rentChips .chip').forEach(function (c) { c.classList.remove('selected'); });
+    if (v === 0) document.getElementById('noRentChip').classList.add('selected');
+  });
+
+  function pickIncome(income, el) {
+    state.income = income;
+    document.querySelectorAll('#step3 .opt').forEach(function (o) { o.classList.remove('selected'); });
+    el.classList.add('selected');
+    document.getElementById('toResult').disabled = false;
+  }
+
+  function fmt(n) { return n.toLocaleString('ko-KR'); }
+
+  function calcDeduction() {
+    if (state.income === 'high') return { amount: 0, rate: 0, capped: 0, eligible: false };
+    var rate = state.income === 'low' ? 0.17 : 0.15;
+    var annual = Math.min(state.rent * 12, 1000); // 연 1,000만원 한도
+    return { amount: Math.round(annual * 10000 * rate), rate: rate, capped: annual, eligible: true };
+  }
+
+  function kpassRate() { return state.age === 'youth' ? 0.30 : 0.20; }
+  function kpassLabel() { return state.age === 'youth' ? '청년 30%' : '일반 20%'; }
+
+  function showResult() {
+    renderHero();
+    renderSupports();
+    goStep(4);
+  }
+
+  function changeRate(income, el) {
+    state.income = income;
+    document.querySelectorAll('#rateRow .rate-chip').forEach(function (c) { c.classList.remove('selected'); });
+    el.classList.add('selected');
+    renderHero();
+  }
+
+  function renderHero() {
+    var d = calcDeduction();
+    var amt = document.getElementById('deductionAmount');
+    var f = document.getElementById('deductionFormula');
+    var n = document.getElementById('deductionNote');
+    if (!state.rent) {
+      amt.innerHTML = '0<span class="won">원</span>';
+      f.textContent = '월세가 없어서 세액공제 대상이 아니야';
+      n.textContent = '전세·자가라면 월세 세액공제는 해당 없어. 아래 숨은 지원금을 확인해봐.';
+      n.classList.add('zero');
+    } else if (!d.eligible) {
+      amt.innerHTML = '0<span class="won">원</span>';
+      f.textContent = '총급여 8,000만원 초과라 공제 대상이 아니야';
+      n.textContent = '월세 세액공제는 총급여 8,000만원 이하(종합소득금액 7,000만원 이하) 근로자만 받을 수 있어. 아래 숨은 지원금은 따로 확인해봐.';
+      n.classList.add('zero');
+    } else {
+      amt.innerHTML = fmt(d.amount) + '<span class="won">원</span>';
+      var capNote = d.capped < state.rent * 12 ? ' (연 1,000만원 한도 적용)' : '';
+      f.textContent = '월세 ' + state.rent + '만원 × 12 = ' + fmt(state.rent * 12) + '만원 × ' + (d.rate * 100) + '%' + capNote;
+      n.textContent = '월 ' + fmt(Math.round(d.amount / 12)) + '원꼴이야. 세액공제는 납 세액에서 깎아주는 제도라 실제 환급액은 내 산출세액에 따라 달라져.';
+      n.classList.remove('zero');
+    }
+    document.querySelectorAll('#rateRow .rate-chip').forEach(function (c) {
+      c.classList.toggle('selected', c.getAttribute('data-rate') === state.income);
+    });
+  }
+
+  function renderSupports() {
+    var youth = state.age === 'youth';
+    var kr = kpassRate();
+    var kpassAmt = Math.round(70000 * kr);
+    var cards = [];
+
+    cards.push({
+      icon: '🏠', title: '청년월세 지원', org: '국토교통부 · 신청은 복지로',
+      badge: youth ? 'warn' : 'off', badgeText: youth ? '2026 접수 마감' : '나이 조건 미충족',
+      amount: '월 20만원 × 최대 24개월',
+      amountSub: '최대 480만원',
+      body: '부모님과 따로 사는 무주택 청년이면 월세를 최대 20만원씩, 최장 24개월 지원해. 생애 1회. 2026년 신규 신청기간(3.30~5.29)은 끝났고, 2027년 재오픈 예정이야.',
+      tags: ['2026 접수 마감', '2027년 재오픈 예정'],
+      link: 'https://www.bokjiro.go.kr',
+      linkText: '복지로에서 확인하기 →',
+      disabled: !youth
+    });
+
+    cards.push({
+      icon: '🏦', title: '청년미래적금', org: '서민금융진흥원 · 만 19~34세',
+      badge: youth ? 'warn' : 'off', badgeText: youth ? '2차 모집 종료' : '나이 조건 미충족',
+      amount: '월 50만원 × 36개월 + 정부기여금',
+      amountSub: '기여금 최대 216만원',
+      body: '3년 만기 적금에 정부가 납입액의 6~12%를 더 얹어줘. 우대형(월 50만원 납입) 기준 기여금 최대 216만원, 이자소득 비과세. 2차 신청(10.7~16)은 끝났고, 3차 모집은 2027년 정부 예산안 확정 뒤에 열려.',
+      tags: ['11/16~27 계좌개설 중', '3차 모집 2027년'],
+      link: 'https://www.kinfa.or.kr',
+      linkText: '서민금융진흥원 공지 확인 →',
+      disabled: !youth
+    });
+
+    cards.push({
+      icon: '🚌', title: '모두의카드 (K-패스)', org: '국토교통부 · 만 19세 이상 이용',
+      badge: 'ok', badgeText: '지금 가능',
+      amount: '월 교통비 7만원 기준',
+      amountSub: '월 ' + fmt(kpassAmt) + '원 환급',
+      body: '한 달에 대중교통 15회 이상 타면 쓴 돈의 ' + (kr * 100) + '%(' + kpassLabel() + ')를 다음 달 돌려받아. 2026년부터 이름이 모두의카드로 바뀌었고, 이용금액이 기준을 넘으면 초과분 전액 환급되는 정액형도 있어. 둘 중 큰 금액이 자동으로 적용돼.',
+      tags: ['월 15회 이상', '시차 출퇴근 추가환급 ~12.31'],
+      link: 'https://korea-pass.kr',
+      linkText: '모두의카드에서 확인하기 →',
+      disabled: false
+    });
+
+    cards.push({
+      icon: '💰', title: '근로장려금', org: '국세청 · 가구 유형별 차등',
+      badge: 'check', badgeText: '조건 확인',
+      amount: '단독가구 기준 최대',
+      amountSub: '165만원',
+      body: '부부 합산 총소득이 단독 2,200만원 / 홀벌이 3,200만원 / 맞벌이 4,400만원 미만이면 신청할 수 있어. 재산 2억4천만원 미만 조건도 있어. 아직 안 받았다면 12월 1일까지 기한 후 신청하면 95%를 받아.',
+      tags: ['12월 1일 기한 후 신청 마감', '기한 후 신청 시 95% 지급'],
+      link: 'https://www.nts.go.kr',
+      linkText: '국세청에서 확인하기 →',
+      disabled: false,
+      hot: true
+    });
+
+    var html = '';
+    var okCount = 0;
+    cards.forEach(function (c) {
+      if (!c.disabled) okCount++;
+      html += '<div class="support' + (c.disabled ? ' disabled' : '') + '">'
+        + '<div class="s-head"><span class="ic">' + c.icon + '</span>'
+        + '<span><b>' + c.title + '</b><span class="org">' + c.org + '</span></span>'
+        + '<span class="s-badge ' + c.badge + '">' + c.badgeText + '</span></div>'
+        + '<div class="s-amount"><small>' + c.amount + '</small><br>' + c.amountSub + '</div>'
+        + '<p class="s-body">' + c.body + '</p>'
+        + '<div class="s-tags">' + c.tags.map(function (t) {
+            return '<span class="s-tag' + (c.hot && t.indexOf('12월 1일') === 0 ? ' hot' : '') + '">' + t + '</span>';
+          }).join('') + '</div>'
+        + '<a class="s-link" href="' + c.link + '" target="_blank" rel="noopener">' + c.linkText + '</a>'
+        + '</div>';
+    });
+    document.getElementById('supportList').innerHTML = html;
+    document.getElementById('supportCount').textContent = '총 4건 · 내 조건 해당 ' + okCount + '건';
+  }
+
+  function copyResult() {
+    var d = calcDeduction();
+    var kr = kpassRate();
+    var youth = state.age === 'youth';
+    var ageText = youth ? '만 19~34세' : (state.age === 'late30' ? '만 35~39세' : '만 40세 이상');
+    var lines = [
+      '🍯 허니팁 지원금 체크 결과 (2026.11 기준)',
+      '· 나이: ' + ageText,
+      '· 내 예상 월세 세액공제: ' + fmt(d.amount) + '원 (월세 ' + state.rent + '만원 × 12개월 × ' + (d.rate ? (d.rate * 100) + '%' : '대상 아님') + ')',
+      '· 청년월세 지원: 최대 480만원 (2026 접수 마감, 2027년 재오픈 예정)',
+      '· 청년미래적금: 기여금 최대 216만원 (우대형 기준, 2차 모집 종료)',
+      '· 모두의카드(K-패스): 월 교통비 7만원 기준 월 ' + fmt(Math.round(70000 * kr)) + '원 환급 (' + kpassLabel() + ')',
+      '· 근로장려금: 단독가구 기준 최대 165만원 (기한 후 신청 12월 1일까지, 95% 지급)',
+      '· 세액공제는 납 세액에서 깎아주는 제도라 실제 환급액은 내 산출세액에 따라 달라져요.'
+    ];
+    var text = lines.join('\n');
+    function done() { showToast('복사했어요 📋'); }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done, function () { fallbackCopy(text); done(); });
+    } else { fallbackCopy(text); done(); }
+  }
+  function fallbackCopy(text) {
+    var ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); } catch (e) {}
+    document.body.removeChild(ta);
+  }
+  function showToast(msg) {
+    var t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    setTimeout(function () { t.classList.remove('show'); }, 2200);
+  }
+</script>
+</body>
+</html>
